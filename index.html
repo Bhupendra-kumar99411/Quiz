@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+.quiz-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.option-container {
+  margin-top: 10px;
+}
+
+.btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: orange;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #ff6600;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 20% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 400px;
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #000;
+}
+
+</style>
+<body>
+  <div class="quiz-container">
+    <div id="question"></div>
+    <div id="options" class="option-container"></div>
+    <button id="backBtn" class="btn">Back</button>
+    <button id="nextBtn" class="btn">Next</button>
+  </div>
+
+  <div id="result-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="result"></p>
+    </div>
+  </div>
+
+  <script src="quiz.js"></script>
+
+
+<script>
+    const quizData = [
+  {
+    question: "What is the capital of France?",
+    options: ["Paris", "Rome", "Berlin", "Madrid"],
+    answer: "Paris"
+  },
+  {
+    question: "Which planet is known as the Red Planet?",
+    options: ["Mars", "Venus", "Jupiter", "Saturn"],
+    answer: "Mars"
+  },
+  {
+    question: "Who wrote 'To Kill a Mockingbird'?",
+    options: ["Harper Lee", "J.K. Rowling", "Ernest Hemingway", "Stephen King"],
+    answer: "Harper Lee"
+  },
+  {
+    question: "What is the chemical symbol for water?",
+    options: ["H2O", "CO2", "NaCl", "O2"],
+    answer: "H2O"
+  },
+  {
+    question: "What year did the Titanic sink?",
+    options: ["1912", "1907", "1923", "1898"],
+    answer: "1912"
+  }
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+const questionElem = document.getElementById('question');
+const optionsElem = document.getElementById('options');
+const backBtn = document.getElementById('backBtn');
+const nextBtn = document.getElementById('nextBtn');
+const resultModal = document.getElementById('result-modal');
+const resultText = document.getElementById('result');
+
+// Load initial question
+loadQuestion();
+
+// Load question and options
+function loadQuestion() {
+  const question = quizData[currentQuestion];
+  questionElem.textContent = question.question;
+  optionsElem.innerHTML = '';
+  question.options.forEach(option => {
+    const button = document.createElement('button');
+    button.textContent = option;
+    button.classList.add('btn');
+    button.addEventListener('click', () => checkAnswer(option));
+    optionsElem.appendChild(button);
+  });
+  backBtn.style.display = currentQuestion === 0 ? 'none' : 'inline-block';
+  nextBtn.textContent = currentQuestion === quizData.length - 1 ? 'Finish' : 'Next';
+}
+
+// Check answer
+function checkAnswer(selectedOption) {
+  const correctAnswer = quizData[currentQuestion].answer;
+  if (selectedOption === correctAnswer) {
+    score++;
+  }
+  if (currentQuestion < quizData.length - 1) {
+    currentQuestion++;
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+// Show result
+function showResult() {
+  resultText.textContent = `Your score is ${score}/${quizData.length}`;
+  resultModal.style.display = 'block';
+}
+
+// Event listeners
+backBtn.addEventListener('click', () => {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion();
+  }
+});
+
+nextBtn.addEventListener('click', () => {
+  if (currentQuestion < quizData.length - 1) {
+    currentQuestion++;
+    loadQuestion();
+  } else {
+    showResult();
+  }
+});
+
+// Close modal
+resultModal.addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal')) {
+    resultModal.style.display = 'none';
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    resultModal.style.display = 'none';
+  }
+});
+
+</script>
+
+</body>
+</html>
